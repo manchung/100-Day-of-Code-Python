@@ -102,15 +102,6 @@ class Scoreboard(Turtle):
         return self.game_is_paused
         
     
-# game_is_on = True
-# game_is_paused = False
-
-def pause():
-    game_is_paused = not game_is_paused
-
-def quit():
-    game_is_on = False
-
 screen = Screen()
 screen.setup(width=SCREEN_SIZE[0], height=SCREEN_SIZE[1])
 screen.bgcolor('black')
@@ -121,10 +112,6 @@ r_paddle = Paddle(350, 0)
 l_paddle = Paddle(-350, 0)
 ball = Ball()
 scoreboard = Scoreboard()
-
-# ball.setheading(37)
-# ball.speed('slowest')
-# ball.forward(500)
 
 screen.listen()
 screen.onkeypress(r_paddle.up, 'Up')
