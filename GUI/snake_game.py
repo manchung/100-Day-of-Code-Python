@@ -19,6 +19,12 @@ class Snake:
             self.turtles.append(turtle)
         self.head = self.turtles[0]
 
+    def reset(self):
+        for turtle in self.turtles:
+            turtle.goto(1000,1000)
+            turtle.hideturtle()
+        self.__init__()
+    
     def extend(self):
         tail = Turtle(shape='square')
         tail.penup()
@@ -74,20 +80,47 @@ class Scoreboard(Turtle):
     def __init__(self):
         super().__init__()
         self.score = 0
+        self.read_high_score_from_file()
         self.pencolor('white')
         self.penup()
-        self.goto(0,280)
-        self.write(f"Score: {self.score}", align='center', font=('Courier', 20, 'bold'))
         self.hideturtle()
+        self.write_score()
     
+    def write_score(self):
+        self.clear()
+        self.goto(0,280)
+        self.write(f"Score: {self.score}  High Score: {self.high_score}", align='center', font=('Courier', 20, 'bold'))
+
     def increment_score(self):
         self.score += 1
-        self.clear()
-        self.write(f"Score: {self.score}", align='center', font=('Courier', 20, 'bold'))
+        self.write_score()
 
     def game_over(self):
         self.goto(0,0)
-        self.write("Game Over", align='center', font=('Courier', 20, 'bold'))
+        self.write("Game Over.", align='center', font=('Courier', 20, 'bold'))
+        self.goto(0, -20)
+        self.write("Type r to Restart, q to Quit", align='center', font=('Courier', 10, 'normal'))
+
+    def reset(self):
+        self.clear()
+        if self.score > self.high_score:
+            self.high_score = self.score 
+        self.write_high_score_to_file()
+        self.score = 0
+        self.write_score()
+    
+    def write_high_score_to_file(self, filename='snake_high_score.txt'):
+        with open(filename, 'w') as file:
+            file.write(f"{self.high_score}")
+    
+    def read_high_score_from_file(self, filename='snake_high_score.txt'):
+        try :
+            with open(filename, 'r') as file:
+                contents = file.read()
+                self.high_score = int(contents)
+        except:
+            self.high_score = 0
+        
 
 
 screen.tracer(0)
@@ -101,25 +134,42 @@ screen.onkey(snake.down, 'Down')
 screen.onkey(snake.left, 'Left')
 screen.onkey(snake.right, 'Right')
 
+game_over = True
+def reset_game():
+    global game_over, scoreboard, snake
+    if game_over:
+        snake.reset()
+        scoreboard.reset()
+        return game_loop()
 
-game_is_on = True
-while game_is_on:
-    time.sleep(0.2)
-    snake.move()
-    screen.update()
+def quit_game():
+    exit()
 
-    if snake.head.distance(food) < 20:
-        food.refresh()
-        snake.extend()
-        scoreboard.increment_score()
-    
-    if snake.head.xcor() >= 280 or snake.head.xcor() <= -280 \
-        or snake.head.ycor() >= 280 or snake.head.ycor() <= -280 or \
-        snake.intersect():
-        game_is_on = False
-        scoreboard.game_over()
+screen.onkey(reset_game, 'r')
+screen.onkey(quit_game, 'q')
+# game_is_on = True
 
+def game_loop():
+    game_over = False
+    while True:
+        time.sleep(0.2)
+        snake.move()
+        screen.update()
 
+        if snake.head.distance(food) < 20:
+            food.refresh()
+            snake.extend()
+            scoreboard.increment_score()
+        
+        if snake.head.xcor() >= 280 or snake.head.xcor() <= -280 \
+            or snake.head.ycor() >= 280 or snake.head.ycor() <= -280 or \
+            snake.intersect():
+            # game_is_on = False
+            game_over = True
+            scoreboard.game_over()
+            return
+
+game_loop()
 
 screen.exitonclick()
 
