@@ -3,9 +3,37 @@ from tkinter import messagebox
 import random
 import string
 import pyperclip
+import os
+import json
 
-filename = 'data.txt'
+filename = f'{os.path.dirname(__file__)}/data.json'
 default_email = 'manch@email.com'
+logo_image_filename = f'{os.path.dirname(__file__)}/logo.png'
+
+def search_password():
+    try: 
+        with open(file=filename, mode='r') as file:
+            all_data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showerror('No Data File Found')
+        return
+
+    website = website_entry.get()
+    print(f'website: {website}')
+    try:
+        email = all_data[website]['email']
+        password = all_data[website]['password']
+    except KeyError:
+        messagebox.showinfo(message=f'No details for the website {website} exists.')
+    else:
+        email_entry.delete(0,END)
+        email_entry.insert(0, email)
+        password_entry.delete(0,END)
+        password_entry.insert(0, password)
+        pyperclip.copy(password)
+        messagebox.showinfo(title=website, 
+                            message=f'Email: {email}\nPassword: {password}\nPassword already copied to clipboard.')
+    
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
@@ -47,14 +75,28 @@ def add_password():
         messagebox.showerror(title='Error', message='The "Password" field cannot be empty')
         return
     
-    is_ok = messagebox.askokcancel(title=website, 
-                                   message=f'You have entered the following\nWebsite:{website}\nEmail:{email}\nPassword:{password}\nOK to proceed?')
+    # is_ok = messagebox.askokcancel(title=website, 
+    #                                message=f'You have entered the following\nWebsite:{website}\nEmail:{email}\nPassword:{password}\nOK to proceed?')
     
-    if is_ok:
-        with open(file=filename, mode='a') as file:
-            file.write(f'{website} | {email} | {password}\n')
-        website_entry.delete(0, END)
-        password_entry.delete(0, END)
+    new_data = {
+        website : {
+            'email': email,
+            'password': password,
+        }
+    }
+
+    try: 
+        with open(file=filename, mode='r') as file:
+            all_data = json.load(file)
+            all_data.update(new_data)
+    except FileNotFoundError:
+        all_data = new_data
+    
+    with open(file=filename, mode='w') as file:
+        json.dump(all_data, file, indent=4)
+
+    website_entry.delete(0, END)
+    password_entry.delete(0, END)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -64,7 +106,7 @@ window.title('Password Manager')
 window.config(padx=20, pady=20, bg='white')
 
 canvas = Canvas(width=200, height=200, bg='white', highlightthickness=0)
-logo_img = PhotoImage(file='logo.png')
+logo_img = PhotoImage(file=logo_image_filename)
 canvas.create_image(100, 100, image=logo_img)
 # canvas_text = canvas.create_text(100,130, text='00:00', fill='white', font=(FONT_NAME,35,'bold'))
 canvas.grid(row=0, column=1)
@@ -78,10 +120,14 @@ email_label.grid(row=2, column=0)
 password_label = Label(text='Password:', bg='white')
 password_label.grid(row=3, column=0)
 
-website_entry = Entry(width=36, bg='white', 
+website_entry = Entry(width=21, bg='white', 
                       highlightthickness=0, highlightbackground='white', highlightcolor='white')
-website_entry.grid(row=1, column=1, columnspan=2)
+website_entry.grid(row=1, column=1)
 website_entry.focus()
+
+search_button = Button(text='Search', bg='white', width=11,
+                       highlightthickness=0, highlightbackground='white', command=search_password)
+search_button.grid(row=1, column=2)
 
 email_entry = Entry(width=36, bg='white', 
                       highlightthickness=0, highlightbackground='white', highlightcolor='white')

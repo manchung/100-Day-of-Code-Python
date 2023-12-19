@@ -1,5 +1,0 @@
-something | manch@gm | what
-what | manch@email.com | aaa
-what 2 | manch@email.com | aaa 2
-amazon | manch@email.com | hello
-crazy.com | manch@email.com | cHg9vu9x(F8E$WJe

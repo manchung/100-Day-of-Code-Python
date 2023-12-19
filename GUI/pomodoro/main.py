@@ -1,4 +1,5 @@
 from tkinter import *
+import os
 
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#e2979c"
@@ -14,6 +15,7 @@ LONG_BREAK_MIN = 20
 # LONG_BREAK_MIN = 0.2
 reps = 0
 timer = None
+background_image_filename = f'{os.path.dirname(__file__)}/tomato.png'
 
 # ---------------------------- TIMER RESET ------------------------------- # 
 def reset_timer():
@@ -62,7 +64,7 @@ window.title('Pomodoro')
 window.config(padx=100, pady=50, bg=YELLOW)
 
 canvas = Canvas(width=200, height=224, bg=YELLOW, highlightthickness=0)
-tomato_img = PhotoImage(file='tomato.png')
+tomato_img = PhotoImage(file=background_image_filename)
 canvas.create_image(100, 112, image=tomato_img)
 canvas_text = canvas.create_text(100,130, text='00:00', fill='white', font=(FONT_NAME,35,'bold'))
 canvas.grid(row=1, column=1)
