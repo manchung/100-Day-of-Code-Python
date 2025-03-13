@@ -1,12 +1,14 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
-driver = webdriver.Chrome()
+chrome_options = Options()
+chrome_options.add_experimental_option("detach", True)  # Prevents browser from closing
+
+driver = webdriver.Chrome(options=chrome_options)
 driver.get('https://www.python.org/')
 
 li_elements = driver.find_elements(By.CSS_SELECTOR, value='.event-widget ul li')
-# print(li_elements)
-# print(len(li_elements))
 
 event_dict = {}
 for idx, li in enumerate(li_elements):
@@ -16,4 +18,4 @@ for idx, li in enumerate(li_elements):
     event_dict[idx] = {'time': date, 'name': event}
 
 print(event_dict)
-driver.quit()
+# driver.quit()
