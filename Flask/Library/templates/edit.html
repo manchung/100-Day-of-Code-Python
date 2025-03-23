@@ -1,0 +1,24 @@
+{% from 'bootstrap5/form.html' import render_form %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Add Book</title>
+    {{ bootstrap.load_css() }}
+  </head>
+  <body>
+    <div class="container">
+      <div class="row mt-5 pt-5">
+        <div class="col-4">
+        </div>
+        <div class="col-4">
+          {{ render_form(form) }}
+        </div>
+        <div class="col-4">
+        </div>
+      </div>
+    </div>
+    {{ bootstrap.load_js() }}
+  </body>
+</html>
